@@ -11,6 +11,6 @@
 
 <ul>
 	<li><a href="https://autr.github.io/eu-inc-masonry/">View Example</a></li>
-	<li><a href="https://autr.github.io/eu-inc-masonry/">View Source</a></li>
+	<li><a href="https://github.com/Autr/eu-inc-masonry/blob/main/index.html">View Source</a></li>
 	<li><a href="https://web-directive.eu/">Web Accessibility Directive</a></li>
 </ul>
