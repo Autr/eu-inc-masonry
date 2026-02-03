@@ -1,0 +1,176 @@
+<html>
+
+
+
+	<style>
+
+		html, body {
+			background: #fefefe;
+			color: #444;
+			margin: 0;
+			padding: 0;
+			font-family: sans-serif;
+			line-height: 1.682em;
+		}
+
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		h1 span, h2 span, h3 span, h4 span {
+			border-bottom: 4px solid #444;
+		}
+
+		p, h1, h2, h3, h4, ul, ol {
+			margin-bottom: 1.682rem;
+		}
+
+		a, a:visited {
+			color: #444;
+			border-bottom: 2px solid #444;
+			text-decoration: none;
+		}
+
+		ol {
+			list-style: none;
+			counter-reset: item;
+		}
+		ol > li::before {
+			content: counter(item) ") ";
+			counter-increment: item;
+			text-align: right;
+			margin-right: calc( 16.82px / 4);
+		}
+
+		.wrapper {
+			padding: 16.82px;
+			margin: 0 auto;
+		}
+
+		.masonry-grid {
+			column-count: 1; /* MOBILE ONLY */
+			column-gap: 16.82px;
+			width: 100%;
+		}
+
+		@media (min-width: 500px)  { .masonry-grid { column-count: 2; } }
+		@media (min-width: 800px)  { .masonry-grid { column-count: 3; } }
+		@media (min-width: 1100px) { .masonry-grid { column-count: 4; } }
+		@media (min-width: 1400px) { .masonry-grid { column-count: 5; } }
+
+		.masonry-grid > * {
+			break-inside: avoid;
+			margin-bottom: 16.82px;
+			display: block;
+		}
+
+		.masonry-grid img {
+			width: 100%;
+			height: auto;
+			display: block;
+			position: relative;
+			z-index: 1;
+		}
+
+		.masonry-grid figure {
+			position: relative;
+		}
+
+		.masonry-grid figcaption {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+		}
+
+	</style>
+
+	<script>
+
+		const JSONUrl = 'https://core.service.elfsight.com/p/boot/?page=https%3A%2F%2Fapps.elfsight.com%2Fwidget%2F076494aa-6dca-49ce-beca-23071b573eda&w=076494aa-6dca-49ce-beca-23071b573eda'
+
+		async function loadImages() { // THIS SHOULD BE DONE SERVER SIDE (IDEALLY)
+
+
+			// --------- GET IMAGES ------
+
+			const res = await (await fetch(JSONUrl)).json()
+			const key = (Object.keys(res?.data?.widgets || {}))?.[0]
+			const images = res?.data?.widgets?.[key]?.data?.settings?.images
+
+			// --------- CREATE GALLERY ------
+
+			let index = 0
+			const gallery = document.getElementById('gallery')
+
+			for (const image of images) {
+
+				// --------- CREATE IMAGE ------
+
+			    const img = document.createElement('img')
+			    img.src = image?.file?.data?.url
+			    img.id = image.id
+    			img.alt = image.title
+    			img.title = image.title
+    			img.setAttribute('data-index', index)
+    			img.setAttribute('loading', 'lazy') // native browser lazy-loading
+    			img.setAttribute('decoding', 'async') // decode off main thread (don't slow up)
+    			img.setAttribute('fetchpriority', index < 3 ? 'high' : 'low') // eager for first few
+    			img.setAttribute('aria-describedby', `caption-${index}`)
+    			img.setAttribute('role', 'img') // super strict aria usage
+
+				// --------- CREATE CAPTION ------
+
+    			const caption = document.createElement('figcaption')
+    			caption.id = `caption-${index}`
+    			caption.textContent = `Photo of ${image.title}`
+
+				const figure = document.createElement('figure')
+			    figure.className = `photo-${index}`
+
+				// --------- APPEND / ADD ------
+
+    			figure.appendChild(img)
+    			figure.appendChild(caption)
+    			gallery.appendChild(figure)
+
+    			index += 1
+			}
+
+			console.log(key, images)
+		}
+
+		loadImages()
+
+
+
+	</script>
+
+	<body>
+
+
+		<div class="wrapper">
+
+			<h1><span>EU Inc. CSS Masonry</span></h1>
+
+			<ol>
+				<li><a href="https://www.eu-inc.org">EU Inc</a> has a good Lighthouse score, but technically cheating, because loads 70MB of images in an iframe to first paint</li>
+				<li>In this example, the image gallery JSON is grabbed from the <a href="https://apps.elfsight.com/widget/076494aa-6dca-49ce-beca-23071b573eda">image gallery iframe widget</a> instead</li>
+				<li>The same masonry layout is rendered using plain CSS grid columns and media queries, since the current CSS masonry feature <a href="https://caniuse.com/?search=masonry">minimally supported</a></li>
+				<li>Images use <a href="https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Lazy_loading">lazy-loading</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/fetchpriority">fetch-priority</a> attributes, to lessen 70MB effect on loading performance (ideally this is rendered server-side first, but fine for a dynamic gallery)</li>
+				<li>The hats and famous people are cool, but ideally I'd just like to be able to register a company in 48 hours and with 1EUR of assets, ASAP please</li>
+
+			</ol>
+
+			<div class="masonry-grid" id="gallery">
+
+
+			</div>
+
+		</div>
+
+
+	</body>
+
+
+</html>
